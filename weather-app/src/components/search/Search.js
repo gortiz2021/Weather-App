@@ -10,7 +10,7 @@ const Search = () => {
   const [cityName, setCityName] = useState('');
   const [weather, setWeather] = useState(null);
   
-  const API_KEY = '46654978ae9bab68acd43f8439cbcac5';
+  const API_KEY = '';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
