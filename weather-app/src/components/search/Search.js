@@ -10,7 +10,7 @@ const Search = () => {
   const [cityName, setCityName] = useState('');
   const [weather, setWeather] = useState(null);
   
-  const API_KEY = '46654978ae9bab68acd43f8439cbcac5';
+  const API_KEY = '';
 
   useEffect(() => {
     const WEATHER_URL = `https://api.openweathermap.org/data/3.0/onecall?lat=${latitude}&lon=${longitude}&units=imperial&&appid=${API_KEY}`;
