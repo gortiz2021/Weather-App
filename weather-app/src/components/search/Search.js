@@ -1,4 +1,4 @@
-import React, { useState} from 'react';
+import React, { useState, useEffect } from 'react';
 import './Search.css';
 import { TextField, Typography, Button } from '@mui/material';
 
@@ -10,7 +10,12 @@ const Search = () => {
   const [cityName, setCityName] = useState('');
   const [weather, setWeather] = useState(null);
   
-  const API_KEY = '';
+  const API_KEY = '46654978ae9bab68acd43f8439cbcac5';
+
+  useEffect(() => {
+    const WEATHER_URL = `https://api.openweathermap.org/data/3.0/onecall?lat=${latitude}&lon=${longitude}&units=imperial&&appid=${API_KEY}`;
+    fetchWeather(WEATHER_URL);
+  }, [latitude, longitude]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -30,17 +35,22 @@ const Search = () => {
       setCityName(data[0].local_names.en);
       setLatitude(data[0].lat);
       setLongitude(data[0].lon);
-
-      const WEATHER_URL = `https://api.openweathermap.org/data/3.0/onecall?lat=${latitude}&lon=${longitude}&units=imperial&&appid=${API_KEY}`
-
-      const weatherResponse = await fetch(WEATHER_URL);
-      const weatherData = await weatherResponse.json();
-      console.log(weatherData);
-      setWeather(weatherData);
     }
     catch (e) { 
       console.log(`Error fetching data: ${e}`);
     }  
+  }
+
+  const fetchWeather = async (url) => {
+    try {
+      const response = await fetch(url);
+      const weatherData = await response.json();
+      console.log(weatherData);
+      setWeather(weatherData);
+    }
+    catch (e){
+      console.log(`Error fetching data: ${e}`);
+    }
   }
 
   return (
@@ -58,15 +68,39 @@ const Search = () => {
         </Button>
       </form>
 
-    {weather && (
-      <div>
-        <Typography variant="h2">{cityName}</Typography>
-        <Typography varient='body1'>{weather.current.temp}°F</Typography>
-        <Typography varient='body1'>{weather.current.weather[0].main}</Typography>
-      </div> 
-    )}
+      {weather && weather.current && (
+        <div>
+          <Typography variant="h2">{cityName}</Typography>
 
+          <Typography variant="body1">{new Date(weather.current.dt * 1000).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'})}</Typography>
 
+          <Typography varient='body1'>{weather.current.weather[0].description}</Typography>
+          <img src={`https://openweathermap.org/img/wn/${weather.current.weather[0].icon}.png`} alt="weather icon" />
+
+          {/* Sunday */}
+          {/* <Typography variant="body1">{new Date(weather.daily.dt * 1000).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'})}</Typography> */}
+          <Typography varient='body1'>Sunday: <b>Low</b> {weather.daily[0].temp.min}°F <b>High</b> {weather.daily[0].temp.max}°F</Typography>
+
+          {/* Monday */}
+          <Typography varient='body1'>Monday: {weather.daily[1].temp.day}°F</Typography>
+
+          {/* Tuesday */}
+          <Typography varient='body1'>Tuesday: {weather.daily[2].temp.day}°F</Typography>
+
+          {/* Wednesday */}
+          <Typography varient='body1'>Wednesday: {weather.daily[3].temp.day}°F</Typography>
+
+          {/* Thursday */}
+          <Typography varient='body1'>Thursday: {weather.daily[4].temp.day}°F</Typography>
+
+          {/* Friday */}
+          <Typography varient='body1'>Friday: {weather.daily[5].temp.day}°F</Typography>
+
+          {/* Saturday */}
+          <Typography varient='body1'>Saturday: {weather.daily[6].temp.day}°F</Typography>
+        </div> 
+      )}
+      
     </div>
   );
 };
