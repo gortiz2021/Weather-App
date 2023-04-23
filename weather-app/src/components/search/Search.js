@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './Search.css';
-import { TextField, Typography, Button } from '@mui/material';
+import { TextField, Typography, Button, Card, CardHeader, CardContent } from '@mui/material';
 
 const Search = () => {
 
@@ -9,7 +9,10 @@ const Search = () => {
   const [city, setCity] = useState('');
   const [cityName, setCityName] = useState('');
   const [weather, setWeather] = useState(null);
-  
+  // const [expanded, setExpanded] = useState(false);
+
+  // const IMG_URL = `https://openweathermap.org/img/wn/`;
+
   const API_KEY = '';
 
   useEffect(() => {
@@ -53,6 +56,36 @@ const Search = () => {
     }
   }
 
+  const WeatherCard = ({ day }) => {
+
+    const date = new Date(day.dt * 1000);
+    const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'long' });
+    const ICON_URL = `https://openweathermap.org/img/wn/${day.weather[0].icon}.png`
+
+    return (
+      <Card classname='weather-card' variant='outlined' sx={{ width: 300, height: 200 }}>
+        <CardHeader 
+                title={dayOfWeek}
+                subheader={date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric'})}
+                avatar={<img src={ICON_URL} alt={day.weather[0].description} />}
+              />
+              <CardContent>
+                <Typography variant='body1'>
+                  {/* <img src={`${IMG_URL}${day.weather[0].icon}.png`} alt= 'Weather icon: {day.weather[0].description}' /> <br></br> */}
+                  {day.weather[0].main} <br></br>
+                  {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: 'numeric' }).format(day.sunrise * 1000)}
+                  -
+                  {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: 'numeric' }).format(day.sunset * 1000)}
+                  : <b>Low</b> {day.temp.min}°F <b>High</b> {day.temp.max}°F 
+                </Typography>
+              </CardContent>
+      </Card>
+    )
+
+  };
+
+  
+
   return (
     <div>
       <Typography variant='h1'>Weather App</Typography>
@@ -72,32 +105,30 @@ const Search = () => {
         <div>
           <Typography variant="h2">{cityName}</Typography>
 
-          <Typography variant="body1">{new Date(weather.current.dt * 1000).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'})}</Typography>
+          {weather.daily.map((day, index) => (
+            // <Card key={index}>
+            //   {/* <CardHeader 
+            //     title={new Date(day.dt * 1000).toLocaleDateString('en-US', { weekday: 'long'})}
+            //     subheader={new Date(day.dt * 1000).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'})}
+            //     avatar={<img src={`${IMG_URL}${day.weather[0].icon}.png`} alt={day.weather[0].description} />}
+            //   /> */}
+            //   <Typography variant="body1">{new Date(day.dt * 1000).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'})}</Typography>           
+            //   <CardContent>
+            //     <Typography variant='body1'>
+            //       <img src={`${IMG_URL}${day.weather[0].icon}.png`} alt= 'Weather icon: {day.weather[0].description}' /> <br></br>
+            //       {day.weather[0].main} <br></br>
+            //       {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: 'numeric' }).format(day.sunrise * 1000)}
+            //       -
+            //       {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: 'numeric' }).format(day.sunset * 1000)}
+            //       : <b>Low</b> {day.temp.min}°F <b>High</b> {day.temp.max}°F 
+            //     </Typography>
+            //   </CardContent>
+            // </Card>
 
-          <Typography varient='body1'>{weather.current.weather[0].description}</Typography>
-          <img src={`https://openweathermap.org/img/wn/${weather.current.weather[0].icon}.png`} alt="weather icon" />
-
-          {/* Sunday */}
-          {/* <Typography variant="body1">{new Date(weather.daily.dt * 1000).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'})}</Typography> */}
-          <Typography varient='body1'>Sunday: <b>Low</b> {weather.daily[0].temp.min}°F <b>High</b> {weather.daily[0].temp.max}°F</Typography>
-
-          {/* Monday */}
-          <Typography varient='body1'>Monday: {weather.daily[1].temp.day}°F</Typography>
-
-          {/* Tuesday */}
-          <Typography varient='body1'>Tuesday: {weather.daily[2].temp.day}°F</Typography>
-
-          {/* Wednesday */}
-          <Typography varient='body1'>Wednesday: {weather.daily[3].temp.day}°F</Typography>
-
-          {/* Thursday */}
-          <Typography varient='body1'>Thursday: {weather.daily[4].temp.day}°F</Typography>
-
-          {/* Friday */}
-          <Typography varient='body1'>Friday: {weather.daily[5].temp.day}°F</Typography>
-
-          {/* Saturday */}
-          <Typography varient='body1'>Saturday: {weather.daily[6].temp.day}°F</Typography>
+            <WeatherCard key={index} day={day} />
+            
+          ))}
+          
         </div> 
       )}
       
