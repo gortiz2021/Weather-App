@@ -1,5 +1,16 @@
 .search-container{
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
     padding: 10px;
+    
+}
+form {
+    padding: 20px;
+}
+
+.weather-accordion {
+    display: flex;   
+    justify-content: space-between;
+    align-items: center;  
 }
