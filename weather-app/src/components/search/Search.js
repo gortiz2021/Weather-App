@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './Search.css';
-import { TextField, Typography, Button, Card, CardHeader, CardContent } from '@mui/material';
+import { Button, TextField } from '@mui/material'
+import { CardMedia, Accordion, AccordionSummary, AccordionDetails, Typography } from '@mui/material';
+// import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 const Search = () => {
 
@@ -9,7 +11,7 @@ const Search = () => {
   const [city, setCity] = useState('');
   const [cityName, setCityName] = useState('');
   const [weather, setWeather] = useState(null);
-  // const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(false);
 
   // const IMG_URL = `https://openweathermap.org/img/wn/`;
 
@@ -54,7 +56,11 @@ const Search = () => {
     catch (e){
       console.log(`Error fetching data: ${e}`);
     }
-  }
+  };
+
+  const handleExpandClick = (panel) => (e, isExpanded) => {
+    setExpanded(isExpanded ? panel : false);
+  };
 
   const WeatherCard = ({ day }) => {
 
@@ -63,31 +69,35 @@ const Search = () => {
     const ICON_URL = `https://openweathermap.org/img/wn/${day.weather[0].icon}.png`
 
     return (
-      <Card classname='weather-card' variant='outlined' sx={{ width: 300, height: 200 }}>
-        <CardHeader 
-                title={dayOfWeek}
-                subheader={date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric'})}
-                avatar={<img src={ICON_URL} alt={day.weather[0].description} />}
-              />
-              <CardContent>
-                <Typography variant='body1'>
-                  {/* <img src={`${IMG_URL}${day.weather[0].icon}.png`} alt= 'Weather icon: {day.weather[0].description}' /> <br></br> */}
-                  {day.weather[0].main} <br></br>
-                  {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: 'numeric' }).format(day.sunrise * 1000)}
-                  -
-                  {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: 'numeric' }).format(day.sunset * 1000)}
-                  : <b>Low</b> {day.temp.min}°F <b>High</b> {day.temp.max}°F 
-                </Typography>
-              </CardContent>
-      </Card>
-    )
+      <Accordion className='accordion' sx={{background: 'dodgerblue'}} >
+        <AccordionSummary>
+          <div className='weather-accordion'>
+            <Typography variant='h5' sx={{marginLeft: 0, marginRight: 'auto'}}>{date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</Typography>
+            <CardMedia
+              component="img"
+              sx={{height: '50px', width: '50px', alignSelf: 'flex-end', marginLeft: 'auto', marginRight: 0}}
+              image={ICON_URL}
+              alt={day.weather[0].description}
+            />
+          </div>         
+        </AccordionSummary>
+        <AccordionDetails>
+          <Typography variant="body1">
+            <b>Description:</b> {day.weather[0].description} <br />
+            <b>Low:</b> {day.temp.min}°F <br />
+            <b>High:</b> {day.temp.max}°F <br />
+            <b>Feels like:</b> {day.feels_like.day}°F <br />
+            <b>Wind:</b> {day.wind_speed} mph <br />
+            <b>Humidity:</b> {day.humidity}%
+          </Typography>
+        </AccordionDetails>
+      </Accordion>
+    );
 
   };
 
-  
-
   return (
-    <div>
+    <div className='search-container'>
       <Typography variant='h1'>Weather App</Typography>
       <form onSubmit={handleSubmit}>
         <TextField 
@@ -96,34 +106,16 @@ const Search = () => {
           value={city}
           onChange={(e) => setCity(e.target.value)}
         />
-        <Button variant="contained" color="primary" type="submit">
+        <Button className='submit-weather-btn' variant="contained" color="primary" type="submit">
           Get Weather
         </Button>
       </form>
 
       {weather && weather.current && (
-        <div>
+        <div className='forecast'>
           <Typography variant="h2">{cityName}</Typography>
 
           {weather.daily.map((day, index) => (
-            // <Card key={index}>
-            //   {/* <CardHeader 
-            //     title={new Date(day.dt * 1000).toLocaleDateString('en-US', { weekday: 'long'})}
-            //     subheader={new Date(day.dt * 1000).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'})}
-            //     avatar={<img src={`${IMG_URL}${day.weather[0].icon}.png`} alt={day.weather[0].description} />}
-            //   /> */}
-            //   <Typography variant="body1">{new Date(day.dt * 1000).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'})}</Typography>           
-            //   <CardContent>
-            //     <Typography variant='body1'>
-            //       <img src={`${IMG_URL}${day.weather[0].icon}.png`} alt= 'Weather icon: {day.weather[0].description}' /> <br></br>
-            //       {day.weather[0].main} <br></br>
-            //       {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: 'numeric' }).format(day.sunrise * 1000)}
-            //       -
-            //       {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: 'numeric' }).format(day.sunset * 1000)}
-            //       : <b>Low</b> {day.temp.min}°F <b>High</b> {day.temp.max}°F 
-            //     </Typography>
-            //   </CardContent>
-            // </Card>
 
             <WeatherCard key={index} day={day} />
             
