@@ -1,30 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import './Search.css';
-import { Button, TextField } from '@mui/material'
+import { Button, TextField, Autocomplete } from '@mui/material'
 import { CardMedia, Accordion, AccordionSummary, AccordionDetails, Typography } from '@mui/material';
+
+// Retrieve any API keys or endpoints from another file.
+// This imporves security by keeping sensitive information separate from the main codebase.
+import { API_KEY, LOCATION_API_URL, WEATHER_API_URL, ICON_API_URL } from '../../config/config'
 // import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+// import Weather from '../weather/Weather';
 
 const Search = () => {
+
+  // Define an array of city names
+  // const cities = ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix'];
 
   const [longitude, setLongitude] = useState('');
   const [latitude, setLatitude] = useState('');
   const [city, setCity] = useState('');
   const [cityName, setCityName] = useState('');
   const [weather, setWeather] = useState(null);
-  const [expanded, setExpanded] = useState(false);
-
-  // const IMG_URL = `https://openweathermap.org/img/wn/`;
-
-  const API_KEY = '';
 
   useEffect(() => {
-    const WEATHER_URL = `https://api.openweathermap.org/data/3.0/onecall?lat=${latitude}&lon=${longitude}&units=imperial&&appid=${API_KEY}`;
+    const WEATHER_URL = `${WEATHER_API_URL}?lat=${latitude}&lon=${longitude}&units=imperial&&appid=${API_KEY}`;
     fetchWeather(WEATHER_URL);
   }, [latitude, longitude]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const LOCATION_URL = `http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=1&appid=${API_KEY}`
+    const LOCATION_URL = `${LOCATION_API_URL}?q=${city}&limit=1&appid=${API_KEY}`
     
     try { 
       const response = await fetch(LOCATION_URL);
@@ -58,24 +61,27 @@ const Search = () => {
     }
   };
 
-  const handleExpandClick = (panel) => (e, isExpanded) => {
-    setExpanded(isExpanded ? panel : false);
-  };
-
   const WeatherCard = ({ day }) => {
 
     const date = new Date(day.dt * 1000);
-    const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'long' });
-    const ICON_URL = `https://openweathermap.org/img/wn/${day.weather[0].icon}.png`
+    const ICON_URL = `${ICON_API_URL}/${day.weather[0].icon}.png`
 
     return (
-      <Accordion className='accordion' sx={{background: 'dodgerblue'}} >
+      <Accordion className='accordion' sx={{background: 'rgb(171,219,227)', margin: '20px', borderRadius: '20px', border: '1px solid black',
+      '&:first-of-type': {
+        borderTopLeftRadius: '20px',
+        borderTopRightRadius: '20px',
+      },
+      '&:last-of-type': {
+        borderBottomLeftRadius: '20px',
+        borderBottomRightRadius: '20px',
+      },}} >
         <AccordionSummary>
           <div className='weather-accordion'>
-            <Typography variant='h5' sx={{marginLeft: 0, marginRight: 'auto'}}>{date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</Typography>
+            <Typography variant='h5' >{date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</Typography>
             <CardMedia
               component="img"
-              sx={{height: '50px', width: '50px', alignSelf: 'flex-end', marginLeft: 'auto', marginRight: 0}}
+              sx={{height: '50px', width: '50px'}}
               image={ICON_URL}
               alt={day.weather[0].description}
             />
@@ -99,25 +105,67 @@ const Search = () => {
   return (
     <div className='search-container'>
       <Typography variant='h1'>Weather App</Typography>
-      <form onSubmit={handleSubmit}>
-        <TextField 
-          label="Enter city"
-          variant="outlined"
-          value={city}
+      <form 
+        onSubmit={handleSubmit}
+        style={{
+          display: 'flex',
+          flexDirection: 'column'
+        }}
+      >
+        {/* <Autocomplete
+          freeSolo
+          disableClearable
+          value={city}        
           onChange={(e) => setCity(e.target.value)}
-        />
-        <Button className='submit-weather-btn' variant="contained" color="primary" type="submit">
+          options={cities}
+          getOptionLabel={getOptionLabel}
+          renderInput={(params) => ( */}
+            <TextField 
+            // {...params}
+            placeholder='Enter City'
+            variant="outlined"
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            InputProps={{
+              // ...params.InputProps,
+              // type: 'search',
+              style: {
+                borderRadius: '20px'
+              }
+            }}           
+          />
+        {/* )}
+        />  */}
+        
+        <Button className='submit-weather-btn' 
+                variant="contained" 
+                color="primary" 
+                type="submit"
+                sx={{
+                  borderRadius: '20px',
+                  margin: '20px'
+                }}
+        >
           Get Weather
         </Button>
       </form>
 
       {weather && weather.current && (
         <div className='forecast'>
-          <Typography variant="h2">{cityName}</Typography>
+          <Typography 
+            variant="h2"
+            sx={{
+              display: 'flex',
+              justifyContent:'center'
+            }}
+          >
+            {cityName}
+          </Typography>
 
           {weather.daily.map((day, index) => (
 
             <WeatherCard key={index} day={day} />
+            // <Weather />
             
           ))}
           
@@ -127,6 +175,5 @@ const Search = () => {
     </div>
   );
 };
-
 
 export default Search;

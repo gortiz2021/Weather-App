@@ -3,8 +3,6 @@ import Search from './components/search/Search';
 
 function App() {
 
- 
-
   return (
 
     <div className='app'>
