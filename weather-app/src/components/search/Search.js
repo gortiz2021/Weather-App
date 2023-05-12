@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import './Search.css';
-import { Button, TextField, Autocomplete } from '@mui/material'
-import { CardMedia, Accordion, AccordionSummary, AccordionDetails, Typography } from '@mui/material';
+import { Button, TextField, Typography } from '@mui/material';
+import Weather from '../weather/Weather.js'
 
 // Retrieve any API keys or endpoints from another file.
 // This imporves security by keeping sensitive information separate from the main codebase.
-import { API_KEY, LOCATION_API_URL, WEATHER_API_URL, ICON_API_URL } from '../../config/config'
+import { API_KEY, LOCATION_API_URL, WEATHER_API_URL } from '../../config/config'
 
-// import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-// import Weather from '../weather/Weather';
-
+// A component that takes a user input.
+// The input is a city name.
 const Search = () => {
 
   // Define an array of city names
@@ -34,7 +33,6 @@ const Search = () => {
   // Used to submit the data taken in from a form.
   // In this case, it is taking in a city name from the user and submitted using the "Get Weather" button.
   // OpenWeather API using the city name, API_KEY and LOCATION_API_URL to get longitude and latitude coordinates of the given city.
-  // 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const LOCATION_URL = `${LOCATION_API_URL}?q=${city}&limit=1&appid=${API_KEY}`
@@ -77,52 +75,6 @@ const Search = () => {
     catch (e){
       console.log(`Error fetching data: ${e}`);
     }
-  };
-
-  // A function used to display a 8-day forecast
-  // THe day is determined in the component return section.
-  const WeatherCard = ({ day }) => {
-
-    // Convert the UNIX time into a human readable date.
-    const date = new Date(day.dt * 1000);
-
-    // OpenWeather API provides icons of the weather
-    const ICON_URL = `${ICON_API_URL}/${day.weather[0].icon}.png`
-
-    // Use an accordion from Material UI to display data from the "day" object.
-    return (
-      <Accordion className='accordion' sx={{background: 'rgb(171,219,227)', margin: '20px', borderRadius: '20px', border: '1px solid black',
-      '&:first-of-type': {
-        borderTopLeftRadius: '20px',
-        borderTopRightRadius: '20px',
-      },
-      '&:last-of-type': {
-        borderBottomLeftRadius: '20px',
-        borderBottomRightRadius: '20px',
-      },}} >
-        <AccordionSummary>
-          <div className='weather-accordion'>
-            <Typography variant='h5' >{date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</Typography>
-            <CardMedia
-              component="img"
-              sx={{height: '50px', width: '50px'}}
-              image={ICON_URL}
-              alt={day.weather[0].description}
-            />
-          </div>         
-        </AccordionSummary>
-        <AccordionDetails>
-          <Typography variant="body1">
-            <b>Description:</b> {day.weather[0].description} <br />
-            <b>Low:</b> {day.temp.min}°F <br />
-            <b>High:</b> {day.temp.max}°F <br />
-            <b>Feels like:</b> {day.feels_like.day}°F <br />
-            <b>Wind:</b> {day.wind_speed} mph <br />
-            <b>Humidity:</b> {day.humidity}%
-          </Typography>
-        </AccordionDetails>
-      </Accordion>
-    );
   };
 
   // Search component return
@@ -194,8 +146,8 @@ const Search = () => {
               The length of the array is 7 so an 8-day forcast will be returned.            */}
           {weather.daily.map((day, index) => (
 
-            <WeatherCard key={index} day={day} />
-            // <Weather />
+            // <WeatherCard key={index} day={day} />
+            <Weather key={index} day={day} />
             
           ))}
           
